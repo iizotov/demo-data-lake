@@ -1,0 +1,47 @@
+﻿
+@data = 
+    EXTRACT 
+            ip                  string, 
+            date                string,
+            time                string,
+            zone                float?,
+            cik                 float?,
+            accession           string,
+            extention           string,
+            code                float?,
+            size                float?,
+            idx                 float?,
+            norefer             float?,
+            noagent             float?,
+            find                float?,
+            crawler             float?,
+            browser             string
+    FROM "/web/log2003{*}.csv.gz"
+    USING Extractors.Csv(skipFirstNRows:1, silent:true);
+
+USE DATABASE [logs];
+
+DROP TABLE IF EXISTS [logs-raw-managed];
+
+CREATE TABLE IF NOT EXISTS [logs-raw-managed] (
+            ip                  string, 
+            date                string,
+            time                string,
+            zone                float?,
+            cik                 float?,
+            accession           string,
+            extention           string,
+            code                float?,
+            size                float?,
+            idx                 float?,
+            norefer             float?,
+            noagent             float?,
+            find                float?,
+            crawler             float?,
+            browser             string,
+            INDEX idx CLUSTERED (date, time ASC)
+            DISTRIBUTED BY HASH (ip) INTO 250
+);
+
+INSERT INTO [logs-raw-managed]
+SELECT * FROM @data;

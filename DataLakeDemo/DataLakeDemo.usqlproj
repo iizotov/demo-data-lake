@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>1b07ae12-2f09-4685-a42e-212f112830b2</ProjectGuid>
+    <OutputType>File</OutputType>
+    <AssemblyName>Algebra.xml</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <Name>DataLakeDemo</Name>
+    <RootNamespace>DataLakeDemo</RootNamespace>
+    <RuntimeVersion>default</RuntimeVersion>
+    <OutputStreamPath>C:\USQL</OutputStreamPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Script Include="0. Cognitive.usql" />
+    <Script Include="2. Create Aggregated Table.usql" />
+    <Script Include="3. Script Complex Table.usql" />
+    <Script Include="0. Basic Script.usql" />
+    <Script Include="0. Unpack.usql" />
+    <Script Include="9. Script - complex over files.usql" />
+    <Script Include="1. Create Raw Table.usql" />
+    <Script Include="1. NYC Taxi Script - avg speed.usql" />
+    <ScriptCode Include="0. Cognitive.usql.cs">
+      <DependentUpon>0. Cognitive.usql</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="2. Create Aggregated Table.usql.cs">
+      <DependentUpon>2. Create Aggregated Table.usql</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="3. Script Complex Table.usql.cs">
+      <DependentUpon>3. Script Complex Table.usql</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="0. Basic Script.usql.cs">
+      <DependentUpon>0. Basic Script.usql</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="0. Unpack.usql.cs">
+      <DependentUpon>0. Unpack.usql</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="9. Script - complex over files.usql.cs">
+      <DependentUpon>9. Script - complex over files.usql</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="1. Create Raw Table.usql.cs">
+      <DependentUpon>1. Create Raw Table.usql</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="1. NYC Taxi Script - avg speed.usql.cs">
+      <DependentUpon>1. NYC Taxi Script - avg speed.usql</DependentUpon>
+    </ScriptCode>
+  </ItemGroup>
+  <Import Project="$(AppData)\Microsoft\DataLake\MsBuild\1.0\Usql.targets" />
+</Project>

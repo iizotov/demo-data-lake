@@ -1,0 +1,23 @@
+﻿
+USE DATABASE [logs];
+
+@out =
+    SELECT
+        (int?)cik AS cik,
+        COUNT(DISTINCT ip) AS unique_ip,
+        /*COUNT(DISTINCT ip+date+time) AS unique_hits,*/
+        SUM(size) AS total_traffic,
+        year
+    FROM [logs-raw-managed]
+        WHERE crawler != 1.0 AND size != null
+    GROUP BY
+        cik,
+        year;
+
+CREATE TABLE IF NOT EXISTS [logs-aggr-managed] (
+            INDEX idx CLUSTERED (year, total_traffic DESC)
+            DISTRIBUTED BY ROUND ROBIN 
+) AS 
+    SELECT 
+        *
+    FROM @out;

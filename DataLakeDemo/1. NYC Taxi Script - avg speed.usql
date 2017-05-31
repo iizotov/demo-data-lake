@@ -1,0 +1,96 @@
+﻿//1. Define schema of file, must map all columns
+@data_old_format = 
+    EXTRACT 
+            VendorID          string, 
+            tpep_pickup_datetime           DateTime,
+            tpep_dropoff_datetime       DateTime?,
+            passenger_count int?,
+            trip_distance float?,
+            pickup_longitude float?,
+            pickup_latitude float?,
+            RatecodeID string,
+            store_and_fwd_flag string,
+            dropoff_longitude float?,
+            dropoff_latitude float?,
+            payment_type string,
+            fare_amount float?,
+            extra float?,
+            mta_tax float?,
+            tip_amount float?,
+            tolls_amount float?,
+            total_amount float?,
+			filename    string
+    FROM "/taxi-sample/csv-old/{filename}.csv"
+    USING Extractors.Csv(skipFirstNRows:1, silent:true);
+	
+@data_new_format = 
+    EXTRACT 
+            VendorID          string, 
+            tpep_pickup_datetime           DateTime,
+            tpep_dropoff_datetime       DateTime?,
+            passenger_count int?,
+            trip_distance float?,
+            pickup_longitude float?,
+            pickup_latitude float?,
+            RatecodeID string,
+            store_and_fwd_flag string,
+            dropoff_longitude float?,
+            dropoff_latitude float?,
+            payment_type string,
+            fare_amount float?,
+            extra float?,
+            mta_tax float?,
+            tip_amount float?,
+            tolls_amount float?,
+            improvement_surcharge float?,
+            total_amount float?,
+			filename    string
+    FROM "/taxi-sample/csv-new/{filename}.csv"
+    USING Extractors.Csv(skipFirstNRows:1, silent:true);
+	
+//1.5 UNION two datasets
+@data = 
+SELECT
+    total_amount,
+	trip_distance,
+    passenger_count,
+    tpep_pickup_datetime,
+    tpep_dropoff_datetime,
+    pickup_longitude,
+    pickup_latitude,
+    dropoff_longitude,
+    dropoff_latitude
+FROM @data_old_format
+UNION ALL
+SELECT
+    total_amount,
+	trip_distance,
+    passenger_count,
+    tpep_pickup_datetime,
+    tpep_dropoff_datetime,
+    pickup_longitude,
+    pickup_latitude,
+    dropoff_longitude,
+    dropoff_latitude
+FROM @data_new_format;
+
+@Result = SELECT
+  tpep_pickup_datetime.Month AS month,  
+  tpep_pickup_datetime.Day AS day,
+  AVG(trip_distance / (tpep_dropoff_datetime - tpep_pickup_datetime).Value.TotalSeconds * 3600) AS speed
+FROM
+  @data
+WHERE
+  trip_distance > 0
+  AND total_amount/trip_distance >= 2 
+  AND total_amount/trip_distance <= 10
+  AND tpep_dropoff_datetime > tpep_pickup_datetime
+GROUP BY
+    tpep_pickup_datetime.Month,
+  tpep_pickup_datetime.Day;
+
+
+//3. Output
+OUTPUT @Result 
+TO @"/taxi-sample/output-speed.csv" 
+USING Outputters.Csv();

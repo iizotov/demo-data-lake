@@ -1,0 +1,29 @@
+﻿
+USE DATABASE [logs];
+
+@index = 
+    EXTRACT
+            cik                 int?,
+            symbol              string
+    FROM "/web-logs/index.csv"
+    USING Extractors.Csv(skipFirstNRows:1, silent:true);
+      
+@out =
+    SELECT 
+        b.symbol AS symbol,
+        a.*
+    FROM (
+        SELECT
+            *,
+            RANK() OVER (PARTITION BY year ORDER BY total_traffic DESC) AS ranking
+            FROM [logs-aggr-managed]
+         ) AS a
+            LEFT OUTER JOIN (SELECT cik AS cik, symbol FROM @index) AS b  
+              ON a.cik == b.cik
+        WHERE a.ranking < 100;
+  
+OUTPUT @out
+    TO "/out.tsv"
+    /*ORDER BY year DESC*/
+    /*FETCH 100 ROWS*/
+    USING Outputters.Tsv();

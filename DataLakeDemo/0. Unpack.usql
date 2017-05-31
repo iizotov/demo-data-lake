@@ -1,0 +1,23 @@
+﻿
+@data = 
+    EXTRACT 
+            ip                  string, 
+            date                string,
+            time                string,
+            zone                float?,
+            cik                 float?,
+            accession           string,
+            extention           string,
+            code                float?,
+            size                float?,
+            idx                 float?,
+            norefer             float?,
+            noagent             float?,
+            find                float?,
+            crawler             float?,
+            browser             string
+    FROM "/web/log2014{*}.csv.gz"
+    USING Extractors.Csv(skipFirstNRows:1, silent:true);
+
+OUTPUT @data TO "/web-logs/log2014.csv"
+USING Outputters.Csv();
